@@ -1,0 +1,10 @@
+---
+
+- name: Install SNMPD on Linux
+  include: install_linux.yml
+  when: (ansible_os_family == "Debian") or (ansible_os_family == "RedHat")
+
+
+- name: Install SNMPD on Windows
+  include: install_windows.yml
+  when: ansible_os_family == "Windows"

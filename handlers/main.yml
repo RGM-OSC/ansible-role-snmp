@@ -1,0 +1,12 @@
+---
+# handlers file for snmpd
+
+- name: restart snmpd service
+  service:
+    name: snmpd
+    state: restarted
+
+- name: restart snmp win service
+  win_service:
+    name: "SNMP"
+    state: restarted

@@ -1,0 +1,33 @@
+# snmpd.conf file deployed by Ansible
+#
+# Do *NOT* modify this file by hands as it might be overwriten by
+# remote Administrator !
+#
+# Please contact Axians system administrators if changes are requested
+#
+
+# Access control
+view systemonly included  .1.3.6.1.2.1.1
+view systemonly included  .1.3.6.1.2.1.25.1
+
+view allmib     included  .1
+
+# communities
+com2sec systemUser      default   public
+com2sec rgmUser         localhost  {{ snmp_ro_community }}
+{% for item in rgm_server %}
+com2sec rgmUser         {{ item }}  {{ snmp_ro_community }}
+{% endfor %}
+
+# SNMP protocol ACLs
+group   systemview      v1    systemUser
+group   systemview      v2c   systemUser
+group   rgmGroup        v1    rgmUser
+group   rgmGroup        v2c   rgmUser
+
+access  systemview     ""      any       noauth    exact  systemonly  none none
+access  rgmGroup       ""      any       noauth    exact  allmib      none  none
+
+syslocation {{ snmp_location }}
+syscontact {{ snmp_contact_name }} <{{ snmp_contact_email }}>
+dontLogTCPWrappersConnects yes

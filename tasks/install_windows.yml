@@ -1,0 +1,46 @@
+---
+# tasks file for snmpd on windows
+
+- name: Enable SNMP Windows features
+  win_feature:
+    name: "{{ item }}"
+    ensure: Present
+    include_management_tools: True
+  with_items:
+    - "SNMP-Service"
+    - "RSAT-SNMP"
+    - "SNMP-WMI-Provider"
+
+- name: Set SNMP Manager and Community
+  win_regedit:
+    path: "{{item.key}}"
+    name: "{{item.name}}"
+    type: "{{item.type}}"
+    data: "{{item.value}}"
+    state: present
+  with_items:
+    - key: 'HKLM:\SYSTEM\CurrentControlSet\Services\SNMP\Parameters\ValidCommunities'
+      name: "{{ snmp_ro_community }}"
+      value: 4
+      type: dword
+    - key: 'HKLM:\SYSTEM\CurrentControlSet\Services\SNMP\Parameters\PermittedManagers'
+      name: '2'
+      value: "{{ eon_server }}"
+      type: string
+    - key: 'HKLM:\SYSTEM\CurrentControlSet\Services\SNMP\Parameters\RFC1156Agent'
+      name: 'sysContact'
+      value: "{{ snmp_contact_name }}"
+      type: string
+    - key: 'HKLM:\SYSTEM\CurrentControlSet\Services\SNMP\Parameters\RFC1156Agent'
+      name: 'sysLocation'
+      value: "{{ snmp_location }}"
+      type: string
+    - key: 'HKLM:\SYSTEM\CurrentControlSet\Services\SNMP\Parameters\RFC1156Agent'
+      name: 'sysServices'
+      value: "{{ snmp_services }}"
+      type: dword
+    - key: 'HKLM:\SYSTEM\CurrentControlSet\services\SNMP\Parameters\TrapConfiguration\{{snmp_ro_community}}'
+      name: '2'
+      value: "{{ eon_server }}"
+      type: string
+  notify: restart snmp win service

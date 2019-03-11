@@ -1,0 +1,45 @@
+---
+# tasks file for snmpd
+
+- name: install snmp daemon with yum
+  yum:
+    name: net-snmp
+    state: present
+  when: ansible_os_family == "RedHat"
+
+- name: install snmp daemon with apt
+  apt:
+    name: snmpd
+    state: present
+  when: ansible_os_family == "Debian"
+
+- name: populate service facts
+  service_facts:
+
+- name: open snmp on firewall
+  firewalld:
+    service: snmp
+    permanent: true
+    immediate: true
+    state: enabled
+  when: ("firewalld.service" in ansible_facts.services) and (ansible_os_family == "RedHat")
+
+- name: backup existing {{ snmpd_conf_file }} as {{ snmpd_conf_file }}.ansible.bak
+  command: cp "{{ snmpd_conf_file }}" "{{ snmpd_conf_file }}.ansible.bak"
+  args:
+    creates: "{{ snmpd_conf_file }}.ansible.bak"
+
+- name: copy {{ snmpd_conf_file }} template
+  template:
+    src: "{{ snmpd_conf_template }}"
+    dest: "{{ snmpd_conf_file }}"
+    owner: root
+    group: root
+    mode: 0644
+  notify: restart snmpd service
+
+- name: start and enable snmpd daemon
+  service:
+    name: snmpd
+    state: started
+    enabled: true
