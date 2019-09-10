@@ -3,7 +3,7 @@
 
 - name: install snmp daemon with yum
   yum:
-    name: net-snmp
+    name:
     state: present
   when: ansible_os_family == "RedHat"
 
@@ -15,6 +15,7 @@
 
 - name: populate service facts
   service_facts:
+  register: services
 
 - name: open snmp on firewall
   firewalld:
@@ -22,7 +23,7 @@
     permanent: true
     immediate: true
     state: enabled
-  when: ("firewalld.service" in ansible_facts.services) and (ansible_os_family == "RedHat")
+  when: ("firewalld.service" in services.ansible_facts.services) and  services.ansible_facts.services['firewalld.service'].state == 'running'
 
 - name: backup existing {{ snmpd_conf_file }} as {{ snmpd_conf_file }}.ansible.bak
   command: cp "{{ snmpd_conf_file }}" "{{ snmpd_conf_file }}.ansible.bak"
