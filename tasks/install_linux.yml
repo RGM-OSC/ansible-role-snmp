@@ -3,7 +3,7 @@
 
 - name: install snmp daemon with yum
   yum:
-    name:
+    name: snmpd
     state: present
   when: ansible_os_family == "RedHat"
 
