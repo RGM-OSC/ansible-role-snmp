@@ -1,5 +1,5 @@
 ---
-# handlers file for snmpd
+# handlers file for role-snmp
 
 - name: restart snmpd service
   service:
