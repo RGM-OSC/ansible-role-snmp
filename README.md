@@ -15,39 +15,36 @@ Role Variables
 
 Default variables:
 
-  - snmpd_conf_template:
-specifies the snmpd.conf template file to use. This can be overidden by host variable or playbook variable in case of a specific configuration needs.
+| variable | description |
+|----------|-------------|
+| ```snmpd_conf_template``` | specifies the snmpd.conf template file to use. This can be overidden by host variable or playbook variable in case of a specific configuration needs. |
+| ```snmpd_conf_file```     | The target snmpd.conf file location. Usually this should be modified |
+| ```rgm_server```          | The monitoring server IP address. This should be overidden on playbook scope |
+| ```snmp_ro_community```   | SNMP v1/v2 read-only community name |
+| ```snmp_location```       | SNMP *location* field |
+| ```snmp_contact_name```   | SNMP *contact name* field |
+| ```snmp_contact_email```  | SNMP *contact email* field |
 
-	- snmpd_conf_file:
-The target snmpd.conf file location. Usually this should be modified
-
-	- rgm_server:
-The RGM server IP address. This should be overidden on playbook scope
-
-	- snmp_ro_community:
-	- snmp_location:
-	- snmp_contact_name:
-	- snmp_contact_email:
-SNMP customization variables
 
 Dependencies
 ------------
 
-N/A
+No dependencies
 
 Example Playbook
 ----------------
 
 This example calls the role and override EON IP address and SNMP community:
 
+```yaml
     - hosts: linux
-			vars:
-			- rgm_server: 192.168.1.1
-			- snmp_ro_community: mycommunity
+      vars:
+      - rgm_server: 192.168.1.1
+      - snmp_ro_community: mycommunity
 
       roles:
-         - snmpd
-
+      - role-snmp
+```
 License
 -------
 
@@ -56,5 +53,4 @@ BSD
 Author Information
 ------------------
 
-Eric Belhomme <ebelhomme@fr.scc.com>
-
+Initial write by Eric Belhomme <ebelhomme@fr.scc.com> (2018), released under the terms of BSD license

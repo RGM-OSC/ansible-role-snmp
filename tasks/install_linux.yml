@@ -1,5 +1,5 @@
 ---
-# tasks file for snmpd
+# tasks file for snmpd on linux
 
 - name: install snmp daemon with yum
   yum:

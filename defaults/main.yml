@@ -1,5 +1,5 @@
 ---
-# defaults file for snmpd
+# defaults file for role-snmp
 
 snmpd_conf_template: 'snmpd.conf.j2'
 snmpd_conf_file: '/etc/snmp/snmpd.conf'
