@@ -1,10 +1,14 @@
 ---
-
-- name: Install SNMPD on Linux
-  include: install_linux.yml
+- name: 'Install SNMPD on Linux'
   when: (ansible_os_family == "Debian") or (ansible_os_family == "RedHat")
+  tags:
+    - install
+    - install_snmp
+  ansible.builtin.import_tasks: install/linux/main.yml
 
-
-- name: Install SNMPD on Windows
-  include: install_windows.yml
+- name: 'Install SNMPD on Windows'
   when: ansible_os_family == "Windows"
+  tags:
+    - install
+    - install_snmp
+  ansible.builtin.import_tasks: install/windows/main.yml

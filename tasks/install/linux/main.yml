@@ -1,0 +1,53 @@
+---
+- name: "Install | Linux | Install snmp daemon with yum"
+  when: ansible_os_family == "RedHat"
+  ansible.builtin.yum:
+    name: "{{ packages }}"
+    state: present
+
+- name: "Install | Linux | Install snmp daemon with apt"
+  when: ansible_os_family == "Debian"
+  ansible.builtin.apt:
+    name: snmpd
+    state: present
+
+- name: "Install | Linux | Populate service facts"
+  register: services
+  tags:
+    - firewall
+    - firewall_snmp
+  ansible.builtin.service_facts:
+
+- name: "Install | Linux | Open SNMP on firewall"
+  when:
+    - "'firewalld' in ansible_facts.services"
+    - "ansible_facts.services['firewalld.service'].state == 'running'"
+  tags:
+    - firewall
+    - firewall_snmp
+  ansible.posix.firewalld:
+    service: snmp
+    permanent: true
+    immediate: true
+    state: enabled
+
+- name: "Install | Linux | Backup existing {{ snmpd_conf_file }} as {{ snmpd_conf_file }}.ansible.bak" # noqa name[template]
+  ansible.builtin.command: cp "{{ snmpd_conf_file }}" "{{ snmpd_conf_file }}.ansible.bak"
+  args:
+    creates: "{{ snmpd_conf_file }}.ansible.bak"
+
+- name: "Install | Linux | Copy {{ snmpd_conf_file }} template" # noqa name[template]
+  notify: "Restart snmpd service"
+  diff: "{{ display_diff }}"
+  ansible.builtin.template:
+    src: "{{ snmpd_conf_template }}"
+    dest: "{{ snmpd_conf_file }}"
+    owner: "root"
+    group: "root"
+    mode: "0644"
+
+- name: "Install | Linux | Start and enable snmpd daemon"
+  ansible.builtin.service:
+    name: snmpd
+    state: started
+    enabled: true

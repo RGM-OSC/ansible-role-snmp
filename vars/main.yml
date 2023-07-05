@@ -1,7 +1,5 @@
 ---
-# vars file for role-snmp
-
 packages:
-- libselinux-python
-- firewalld
-- net-snmp
+  - libselinux-python
+  - firewalld
+  - net-snmp

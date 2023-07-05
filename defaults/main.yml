@@ -1,14 +1,14 @@
 ---
-# defaults file for role-snmp
+# Specify if tasks will deplay diffs on file modifications
+display_diff: false
+
+rgm_server:
+  - '127.0.0.1'
 
 snmpd_conf_template: 'snmpd.conf.j2'
 snmpd_conf_file: '/etc/snmp/snmpd.conf'
-
-rgm_server:
-- '127.0.0.1'
-
 snmp_ro_community: 'public'
 snmp_location: 'somewhere'
 snmp_contact_name: 'The IT Team'
 snmp_contact_email: 'admin@somewhere.invalid'
-snmp_services: 79 #0-4-8-12 -- full 70
+snmp_services: 79 # 0-4-8-12 -- full 70

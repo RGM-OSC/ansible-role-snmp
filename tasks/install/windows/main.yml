@@ -1,24 +1,18 @@
 ---
-# tasks file for snmpd on windows
-
-- name: Enable SNMP Windows features
-  win_feature:
-    name: "{{ item }}"
-    ensure: Present
-    include_management_tools: True
-  with_items:
+- name: "Install | Windows | Enable SNMP Windows features"
+  loop:
     - "SNMP-Service"
     - "RSAT-SNMP"
     - "SNMP-WMI-Provider"
-
-- name: Set SNMP Manager and Community
-  win_regedit:
-    path: "{{item.key}}"
-    name: "{{item.name}}"
-    type: "{{item.type}}"
-    data: "{{item.value}}"
+  ansible.windows.win_feature:
+    name: "{{ item }}"
     state: present
-  with_items:
+    include_management_tools: true
+
+- name: "Install | Windows | Set SNMP Manager and Community"
+  notify: restart snmp win service
+  diff: "{{ display_diff }}"
+  loop:
     - key: 'HKLM:\SYSTEM\CurrentControlSet\Services\SNMP\Parameters\ValidCommunities'
       name: "{{ snmp_ro_community }}"
       value: 4
@@ -39,8 +33,13 @@
       name: 'sysServices'
       value: "{{ snmp_services }}"
       type: dword
-    - key: 'HKLM:\SYSTEM\CurrentControlSet\services\SNMP\Parameters\TrapConfiguration\{{snmp_ro_community}}'
+    - key: 'HKLM:\SYSTEM\CurrentControlSet\services\SNMP\Parameters\TrapConfiguration\{{ snmp_ro_community }}'
       name: '2'
       value: "{{ eon_server }}"
       type: string
-  notify: restart snmp win service
+  ansible.windows.win_regedit:
+    path: "{{ item.key }}"
+    name: "{{ item.name }}"
+    type: "{{ item.type }}"
+    data: "{{ item.value }}"
+    state: present
