@@ -1,9 +1,18 @@
 ---
-- name: "Install | Linux | Install snmp daemon with yum"
-  when: ansible_os_family == "RedHat"
-  ansible.builtin.yum:
-    name: "{{ packages }}"
-    state: present
+- name: 'Install snmp daemon'
+  when: ansible_os_family == 'RedHat'
+  block:
+    - name: 'Install SNMP daemon on EL7'
+      ansible.builtin.yum:
+        name: "{{ packages.el7 }}"
+        state: present
+      when: ansible_distribution_major_version|int == 7
+
+    - name: 'Install SNMP daemon on EL9'
+      ansible.builtin.dnf:
+        name: "{{ packages.el9 }}"
+        state: present
+      when: ansible_distribution_major_version|int == 9
 
 - name: "Install | Linux | Install snmp daemon with apt"
   when: ansible_os_family == "Debian"

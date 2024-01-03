@@ -1,5 +1,10 @@
 ---
 packages:
-  - libselinux-python
-  - firewalld
-  - net-snmp
+  el7:
+    - libselinux-python
+    - firewalld
+    - net-snmp
+  el9:
+    - python3-libselinux
+    - firewalld
+    - net-snmp
